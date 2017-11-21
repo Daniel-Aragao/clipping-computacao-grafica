@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+		.cont{
+			display: inline-block;
+			margin-bottom: 10px;
+		}
+		.cont label{
+			display: block;
+		}
+		.col-6{
+			float: left;
+			padding-left: 20px;
+		}
+		button{
+			margin-bottom: 10px;
+		}
+		#myCanvas{
+			border:1px solid black;
+		}
+		</style>
+	</head>
+	<body>
+	<div class="col-6">
+		<!-- 
+			<div>	
+				<div class='cont'>
+					<label>Largura</label>
+					<input id="Largura" type='text' value="600" number/>
+				</div>
+				<div class='cont'>
+					<label>Altura</label>
+					<input id="Altura" type='text' value="300" number/>
+				</div>
+			</div>
+		-->
+		<div>	
+			<div class='cont'>
+				<label>X mínimo</label>
+				<input id="xmin" type='text' value="200" number/>
+			</div>
+			<div class='cont'>
+				<label>Y mínimo</label>
+				<input id="ymin" type='text' value="100" number/>
+			</div>
+		</div>
+		<div>	
+			<div class='cont'>
+				<label>X máximo</label>
+				<input id="xmax" type='text' value="500" number/>
+			</div>
+			<div class='cont'>
+				<label>Y máximo</label>
+				<input id="ymax" type='text' value="400" number/>
+			</div>
+		</div>
+		<div>	
+			<div class='cont'>
+				<label>Nº de retas</label>
+				<input id="numRetas" type='text' value="600" number/>
+			</div>
+			<div class='cont'>
+				<div>&emsp;</div>
+				<label>
+					<input id="omitir" type='checkbox' value="omitir" checked/>
+					Omitir retas
+				</label>
+			</div>
+		</div>
+		<div>
+			<div>
+				&emsp;
+			</div>
+			<button onclick="gerar()">Gerar</button>
+			<button onclick="limpar()">Limpar</button>		
+		</div>
+	</div>
+
+	<div class="col-6">
+		<div>	
+			<div class='cont'>
+				<label>x1</label>
+				<input id="x1" type='text' value="60" number/>
+			</div>
+			<div class='cont'>
+				<label>y1</label>
+				<input id="y1" type='text' value="200" number/>
+			</div>
+		</div>
+		<div>	
+			<div class='cont'>
+				<label>x2</label>
+				<input id="x2" type='text' value="500" number/>
+			</div>
+			<div class='cont'>
+				<label>y2</label>
+				<input id="y2" type='text' value="300" number/>
+			</div>
+		</div>
+		<div>
+			<div>
+				&emsp;
+			</div>
+			<button onclick="desenhar()">Desenhar</button>
+			<button onclick="limpar()">Limpar</button>		
+		</div>
+	</div>
+	
+	<canvas id="myCanvas" width="800" height="500">
+		Your browser does not support the HTML5 canvas tag.
+	</canvas>
+
+	<script>
+		
+		
+	</script>
+	<script src="reta.js"></script>
+		
+	</body>
+</html>
