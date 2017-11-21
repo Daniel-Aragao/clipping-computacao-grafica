@@ -1,6 +1,6 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
-var corIn='yellow';
+var corIn='blue';
 var corOut='red';
 var width = parseInt(document.getElementById('myCanvas').getAttribute('width'));
 var height = parseInt(document.getElementById('myCanvas').getAttribute('height'));
@@ -22,13 +22,14 @@ function clipping(reta, frame){
     // desenharLinha(reta);
     
     if(isToPlotTrivial(posArrayInicial, posArrayFinal)){
-        reta.pInicial.cor = corOut;
-        reta.pFinal.cor = corOut;
+        // reta.pInicial.cor = corOut;
+        // reta.pFinal.cor = corOut;
         desenharLinha(reta);
     }
-    // else if(isToClipTrivial(posArrayInicial, posArrayFinal)){
-    //     clip(reta);
-    // }else{
+    else if(isToClipTrivial(posArrayInicial, posArrayFinal)){
+        clip(reta);
+    }
+    //else{
     //     // var retas = complexClip(reta, posArrayInicial, posArrayFinal, frame);
     //     // desenharLinha(reta)
     //     // retas.forEach(function(r, i){
@@ -212,7 +213,15 @@ function Ponto(x, y, cor){
     this.cor = cor || "black";
 }
 function desenharLinha(reta, isInverted){
-    bresenham(reta, isInverted);
+    //bresenham(reta, isInverted);
+    linetoJS(reta)
+}
+function linetoJS(reta){
+    ctx.beginPath();
+    ctx.strokeStyle = reta.pInicial.cor;	
+    ctx.moveTo(reta.pInicial.x, reta.pInicial.y);
+    ctx.lineTo(reta.pFinal.x, reta.pFinal.y);
+    ctx.stroke();
 }
 function bresenham(reta, isInverted){
     var pInicial = reta.pInicial;
