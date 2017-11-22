@@ -21,34 +21,35 @@ function clipping(reta, frame){
     var posArrayFinal = getFramePositionArray(reta.pFinal, frame)
     // desenharLinha(reta);
     
+    reta.cor = corIn;
     if(isToPlotTrivial(posArrayInicial, posArrayFinal)){
-        // reta.pInicial.cor = corOut;
-        // reta.pFinal.cor = corOut;
-        desenharLinha(reta);
+        // desenharLinha(reta);
     }
     else if(isToClipTrivial(posArrayInicial, posArrayFinal)){
-        clip(reta);
+        // literalClip(reta);
     }
-    //else{
-    //     // var retas = complexClip(reta, posArrayInicial, posArrayFinal, frame);
-    //     // desenharLinha(reta)
-    //     // retas.forEach(function(r, i){
-    //     //     clip(r)
-    //     // })
-    //     console.log('n')
-    // }
+    else{
+        var retas = clip(reta, posArrayInicial, posArrayFinal, frame);
+        desenharLinha(reta)
+        retas.forEach(function(r, i){
+            r.cor = corOut
+            literalClip(r)
+        })
+        console.log('n')
+    }
     
 }
 
-function complexClip(reta, posArrayInicial, posArrayFinal, frame){
+function clip(reta, posArrayInicial, posArrayFinal, frame){
     var retas = []
+    var m = reta.getM();
     if(!inFrame(posArrayInicial)){
-        var intersecao = getIntersecao(reta.pInicial, reta.getM(), posArrayInicial, frame);
+        var intersecao = getIntersecao(reta.pInicial, m, posArrayInicial, frame);
         retas.push(new Reta(reta.pInicial, intersecao))
         reta.pInicial = intersecao;
     } 
     if(!inFrame(posArrayFinal)){
-        getIntersecao(reta.pFinal, reta.getM(), posArrayFinal, frame);   
+        var intersecao = getIntersecao(reta.pFinal, m, posArrayFinal, frame);   
         retas.push(new Reta(intersecao, reta.pFinal))
         reta.pFinal = intersecao;
     }
@@ -57,29 +58,30 @@ function complexClip(reta, posArrayInicial, posArrayFinal, frame){
 
 function getIntersecao(p, m, posArray, frame){
     var intersecao = new Ponto();
-
+    var mx = m;
+    var my = 1/mx;
     if(posArray[0]){ // Above
         intersecao.y = frame.pNW.y 
-        intersecao.x = (1/m)*(frame.pNW.y - p.y) + p.x
+        intersecao.x = my*(frame.pNW.y - p.y) + p.x
     }else if(posArray[1]){ // Bottom
         intersecao.y = frame.pSW.y 
-        intersecao.x = (1/m)*(frame.pSW.y - p.y) + p.x
+        intersecao.x = my*(frame.pSW.y - p.y) + p.x
     }else if(posArray[2]){ // Right
         intersecao.x = frame.pNE.x
-        intersecao.y = m * (frame.pNE.x - p.x) + p.y
+        intersecao.y = mx * (frame.pNE.x - p.x) + p.y
     }else if(posArray[3]){ // Left
         intersecao.x = frame.pNW.x
-        intersecao.y = m * (frame.pNW.x - p.x) + p.y
+        intersecao.y = mx * (frame.pNW.x - p.x) + p.y
     }
-
+    // intersecao.x = parseInt(intersecao.x);
+    // intersecao.y = parseInt(intersecao.y);
     return intersecao;
 }
 
-function clip(reta){
+function literalClip(reta){
     var omitir = document.getElementById('omitir')
     if(!omitir.checked){
-        reta.pInicial.cor = corOut;
-        reta.pFinal.cor = corOut;
+        reta.cor = corOut;
         desenharLinha(reta)
     }
 }
@@ -93,11 +95,11 @@ function gerarRetas(numRetas){
     for(var i = 0; i < numRetas; i++){
         var x1 = getRandomNumber(width)
         var y1 = getRandomNumber(height)
-        var pInicial = new Ponto(x1 , y1, corIn);
+        var pInicial = new Ponto(x1 , y1);
 
         var x2 = getRandomNumber(width)
         var y2 = getRandomNumber(height)
-        var pFinal = new Ponto(x2 , y2, corIn);
+        var pFinal = new Ponto(x2 , y2);
 
         retas.push(new Reta(pInicial, pFinal));
     }
@@ -154,14 +156,12 @@ function getParameters(){
     var ymax = parseInt(document.getElementById("ymax").value);
 
     var numRetas = parseInt(document.getElementById("numRetas").value);
-
-    var cor = 'black';
     
     var frame = new Frame(Largura, Altura);
-    frame.pNE = new Ponto(xmax, ymin, cor);
-    frame.pNW = new Ponto(xmin, ymin, cor);
-    frame.pSW = new Ponto(xmin, ymax, cor);
-    frame.pSE = new Ponto(xmax, ymax, cor);
+    frame.pNE = new Ponto(xmax, ymin);
+    frame.pNW = new Ponto(xmin, ymin);
+    frame.pSW = new Ponto(xmin, ymax);
+    frame.pSE = new Ponto(xmax, ymax);
 
     return {
         frame: frame,
@@ -199,26 +199,27 @@ function Frame(width, height){
     this.pSE;
 }
 
-function Reta(p1, p2){
+function Reta(p1, p2, cor){
     this.pInicial = p1;
     this.pFinal = p2;
+    this.cor = cor || "black";
     this.getM = ()=>{
         return ((p2.y - p1.y)/(p2.x - p1.x))
     }
 }
 
-function Ponto(x, y, cor){
+function Ponto(x, y){
     this.x = x;
     this.y = y;
-    this.cor = cor || "black";
 }
 function desenharLinha(reta, isInverted){
     //bresenham(reta, isInverted);
-    linetoJS(reta)
+    // linetoJS(reta)
+    b2(reta);
 }
 function linetoJS(reta){
     ctx.beginPath();
-    ctx.strokeStyle = reta.pInicial.cor;	
+    ctx.strokeStyle = reta.cor;	
     ctx.moveTo(reta.pInicial.x, reta.pInicial.y);
     ctx.lineTo(reta.pFinal.x, reta.pFinal.y);
     ctx.stroke();
@@ -238,10 +239,10 @@ function bresenham(reta, isInverted){
     deltaY = Math.abs(pFinal.y - pInicial.y);
     
     if(Math.abs(deltaY/deltaX) > 1){
-        var pI = new Ponto(pInicial.y, pInicial.x, pInicial.cor);
-        var pF = new Ponto(pFinal.y, pFinal.x, pFinal.cor);
+        var pI = new Ponto(pInicial.y, pInicial.x);
+        var pF = new Ponto(pFinal.y, pFinal.x);
 
-        desenharLinha(new Reta(pI, pF), true);
+        desenharLinha(new Reta(pI, pF, reta.cor), true);
         return;
     }
 
@@ -254,9 +255,9 @@ function bresenham(reta, isInverted){
         yIncrement = -1;
     }
     
-    var ponto = new Ponto(pInicial.x, pInicial.y, pInicial.cor);
+    var ponto = new Ponto(pInicial.x, pInicial.y);
 
-    drawPixel(ponto);
+    drawPixel(ponto, reta.cor);
     while(ponto.x < pFinal.x){
         if(d <= 0){
             d += incrE;
@@ -266,9 +267,42 @@ function bresenham(reta, isInverted){
         }
         ponto.x++;
         if(isInverted){
-            drawPixel(new Ponto(ponto.y, ponto.x, ponto.cor));
+            drawPixel(new Ponto(ponto.y, ponto.x), reta.cor);
         }else{
-            drawPixel(ponto);
+            drawPixel(ponto, reta.cor);
+        }
+    }
+}
+
+function b2(reta) {
+    var x = reta.pInicial.x, y = reta.pInicial.y;
+    var x2 = reta.pFinal.x, y2 = reta.pFinal.y;
+
+    var dx = x2 - x ;
+    var dy = y2 - y ;
+    var dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+    if (dx<0) dx1 = -1 ; else if (dx>0) dx1 = 1 ;
+    if (dy<0) dy1 = -1 ; else if (dy>0) dy1 = 1 ;
+    if (dx<0) dx2 = -1 ; else if (dx>0) dx2 = 1 ;
+    var longest = Math.abs(dx) ;
+    var shortest = Math.abs(dy) ;
+    if (longest<=shortest) {
+        longest = Math.abs(dy) ;
+        shortest = Math.abs(dx) ;
+        if (dy<0) dy2 = -1 ; else if (dy>0) dy2 = 1 ;
+        dx2 = 0 ;            
+    }
+    var numerator = longest / 2 ;
+    for (var i=0;i<=longest;i++) {
+        drawPixel(x,y, reta.cor) ;
+        numerator += shortest ;
+        if (numerator>=longest) {
+            numerator -= longest ;
+            x += dx1 ;
+            y += dy1 ;
+        } else {
+            x += dx2 ;
+            y += dy2 ;
         }
     }
 }
@@ -277,7 +311,7 @@ function limpar(){
     ctx.clearRect(0,0, width, height)
 }
 
-function drawPixel(p){
-    ctx.fillStyle = p.cor;	
-    ctx.fillRect(p.x, p.y, 1, 1);
+function drawPixel(x, y, cor){
+    ctx.fillStyle = cor;	
+    ctx.fillRect(x, y, 1, 1);
 }
