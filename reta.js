@@ -60,18 +60,32 @@ function getIntersecao(p, m, posArray, frame){
     var intersecao = new Ponto();
     var mx = m;
     var my = 1/mx;
-    if(posArray[0]){ // Above
-        intersecao.y = frame.pNW.y 
-        intersecao.x = my*(frame.pNW.y - p.y) + p.x
-    }else if(posArray[1]){ // Bottom
-        intersecao.y = frame.pSW.y 
-        intersecao.x = my*(frame.pSW.y - p.y) + p.x
-    }else if(posArray[2]){ // Right
-        intersecao.x = frame.pNE.x
-        intersecao.y = mx * (frame.pNE.x - p.x) + p.y
-    }else if(posArray[3]){ // Left
-        intersecao.x = frame.pNW.x
-        intersecao.y = mx * (frame.pNW.x - p.x) + p.y
+    var horizontal = () => {
+        if(posArray[2]){ // Right
+            intersecao.x = frame.pNE.x
+            intersecao.y = mx * (frame.pNE.x - p.x) + p.y
+        }else if(posArray[3]){ // Left
+            intersecao.x = frame.pNW.x
+            intersecao.y = mx * (frame.pNW.x - p.x) + p.y
+        }else{
+            return false;
+        }
+        return true;
+    }
+    var vertical = () =>{
+        if(posArray[0]){ // Above
+            intersecao.y = frame.pNW.y 
+            intersecao.x = my*(frame.pNW.y - p.y) + p.x
+        }else if(posArray[1]){ // Bottom
+            intersecao.y = frame.pSW.y 
+            intersecao.x = my*(frame.pSW.y - p.y) + p.x
+        }else{
+            return false;
+        }   
+        return true;     
+    }
+    if(!vertical() || !inFrame(getFramePositionArray(intersecao, frame))){
+        horizontal();
     }
     // intersecao.x = parseInt(intersecao.x);
     // intersecao.y = parseInt(intersecao.y);
