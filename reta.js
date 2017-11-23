@@ -30,12 +30,18 @@ function clipping(reta, frame){
     }
     else{
         var retas = clip(reta, posArrayInicial, posArrayFinal, frame);
-        desenharLinha(reta)
-        retas.forEach(function(r, i){
-            r.cor = corOut
-            literalClip(r)
-        })
-        console.log('n')
+        if(!retas.length){
+            // reta.cor = 'green';
+            reta.cor = corOut
+            literalClip(reta)
+        }else{
+            desenharLinha(reta)
+            retas.forEach(function(r, i){
+                r.cor = corOut
+                literalClip(r)
+            })
+        }
+        console.log('casos não triviais')
     }
     
 }
@@ -45,13 +51,17 @@ function clip(reta, posArrayInicial, posArrayFinal, frame){
     var m = reta.getM();
     if(!inFrame(posArrayInicial)){
         var intersecao = getIntersecao(reta.pInicial, m, posArrayInicial, frame);
-        retas.push(new Reta(reta.pInicial, intersecao))
-        reta.pInicial = intersecao;
+        if(intersecao){
+            retas.push(new Reta(reta.pInicial, intersecao))
+            reta.pInicial = intersecao;    
+        }
     } 
     if(!inFrame(posArrayFinal)){
-        var intersecao = getIntersecao(reta.pFinal, m, posArrayFinal, frame);   
-        retas.push(new Reta(intersecao, reta.pFinal))
-        reta.pFinal = intersecao;
+        var intersecao = getIntersecao(reta.pFinal, m, posArrayFinal, frame);
+        if(intersecao){
+            retas.push(new Reta(intersecao, reta.pFinal))
+            reta.pFinal = intersecao;
+        }
     }
     return retas;
 }
@@ -86,6 +96,10 @@ function getIntersecao(p, m, posArray, frame){
     }
     if(!vertical() || !inFrame(getFramePositionArray(intersecao, frame))){
         horizontal();
+    }
+
+    if(!inFrame(getFramePositionArray(intersecao, frame))){
+        return;
     }
     // intersecao.x = parseInt(intersecao.x);
     // intersecao.y = parseInt(intersecao.y);
