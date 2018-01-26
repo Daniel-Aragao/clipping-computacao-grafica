@@ -31,9 +31,10 @@ function clipping(reta, frame){
     else{
         var retas = clip(reta, posArrayInicial, posArrayFinal, frame);
         if(!retas.length){
-            // reta.cor = 'green';
-            reta.cor = corOut
-            literalClip(reta)
+            reta.cor = 'green';
+            // reta.cor = corOut
+            // literalClip(reta)
+            desenharLinha(reta)
         }else{
             desenharLinha(reta)
             retas.forEach(function(r, i){
